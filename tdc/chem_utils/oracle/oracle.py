@@ -581,8 +581,8 @@ def SA(s):
   SAscore = calculateScore(mol)
   return SAscore 	
 
-def load_gsk3b_model():
-    gsk3_model_path = 'oracle/gsk3b.pkl'
+def load_gsk3b_model(path = 'oracle'):
+    gsk3_model_path = path + '/gsk3b.pkl'
     #print_sys('==== load gsk3b oracle =====')
     try:
       with open(gsk3_model_path, 'rb') as f:
@@ -592,7 +592,7 @@ def load_gsk3b_model():
       sys.exit("TDC is hosted in Harvard Dataverse and it is currently under maintenance, please check back in a few hours or checkout https://dataverse.harvard.edu/.")
     return gsk3_model 
 
-def gsk3b(smiles):
+def gsk3b(smiles, path):
     """Evaluate GSK3B score of a SMILES string
 
     Args:
@@ -604,7 +604,7 @@ def gsk3b(smiles):
     """  
     if 'gsk3_model' not in globals().keys():
         global gsk3_model 
-        gsk3_model = load_gsk3b_model()
+        gsk3_model = load_gsk3b_model(path)
 
     molecule = smiles_to_rdkit_mol(smiles)
     fp = AllChem.GetMorganFingerprintAsBitVect(molecule, 2, nBits=2048)
@@ -624,8 +624,8 @@ class jnk3:
       jnk3_score: float , between 0 and 1.  
 
   """  
-  def __init__(self):
-    jnk3_model_path = 'oracle/jnk3.pkl'
+  def __init__(self, path = 'oracle'):
+    jnk3_model_path = path + '/jnk3.pkl' #'oracle/jnk3.pkl'
     try:
       with open(jnk3_model_path, 'rb') as f:
         self.jnk3_model = pickle.load(f)

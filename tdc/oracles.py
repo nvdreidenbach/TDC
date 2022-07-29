@@ -22,7 +22,7 @@ class Oracle:
 	    **kwargs: additional parameters for some oracles
 	"""
 	
-	def __init__(self, name, target_smiles = None, num_max_call = None, **kwargs):
+	def __init__(self, name, target_smiles = None, num_max_call = None, path = './oracle',  **kwargs):
 		"""Summary
 		"""
 		self.target_smiles = target_smiles
@@ -35,7 +35,7 @@ class Oracle:
 			name = '3pbl_docking_normalize'
 		if name in download_oracle_names:
 			##### e.g., jnk, gsk, drd2, ... 
-			self.name = oracle_load(name)
+			self.name = oracle_load(name, path)
 		elif name in download_receptor_oracle_name:  
 			## '1iep_docking', '2rgp_docking', '7l11_docking', 'drd3_docking', '3pbl_docking',
 			pdbid = name.split('_')[0]
@@ -48,7 +48,7 @@ class Oracle:
 		else:
 			self.name = name
 		self.evaluator_func = None
-		self.assign_evaluator() 
+		self.assign_evaluator(path) 
 		self.num_called = 0
 
 		if num_max_call is not None:
@@ -56,7 +56,7 @@ class Oracle:
 		else:
 			self.num_max_call = None
 
-	def assign_evaluator(self):		
+	def assign_evaluator(self, path):		
 		"""assign the specific oracle function given by query oracle name
 		"""
 		self.default_property = 0.0 
@@ -77,11 +77,11 @@ class Oracle:
 			self.evaluator_func = SA 
 		elif self.name == 'gsk3b':
 			from .chem_utils import gsk3b
-			oracle_object = gsk3b
+			oracle_object = lambda smiles: gsk3b(smiles, path)
 			self.evaluator_func = oracle_object
 		elif self.name == 'jnk3':
 			from .chem_utils import jnk3
-			oracle_object = jnk3()
+			oracle_object = jnk3(path)
 			self.evaluator_func = oracle_object
 		elif self.name == 'similarity_meta':
 			from .chem_utils import similarity_meta
